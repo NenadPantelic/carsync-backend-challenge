@@ -31,10 +31,10 @@ public class VerificationToken {
 
 	@NotBlank(message = "Email cannot be blank. This is a required field.")
 	@Email(message = "Invalid email format.")
-	@Column(name = "email", unique = true, nullable = false)
+	@Column(name = "email", nullable = false)
 	private String _email;
 
-	@Column(name = "verification_token")
+	@Column(name = "verification_token", unique = true, length = 36)
 	private String _verificationToken;
 
 	@Column(name = "expiration_time")
