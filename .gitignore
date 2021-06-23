@@ -59,3 +59,4 @@ hs_err_pid*
 
 # API creds are stored here
 src/main/resources/application.properties
+
