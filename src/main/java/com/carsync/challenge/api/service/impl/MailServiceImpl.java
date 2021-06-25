@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import com.carsync.challenge.api.exception.MailDeliveryException;
 import com.carsync.challenge.api.model.utils.Email;
 import com.carsync.challenge.api.service.MailService;
+import com.carsync.challenge.api.utils.Messages;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -65,10 +67,12 @@ public class MailServiceImpl implements MailService {
 					.field("from", email.getFrom()).field("to", email.getTo()).field("subject", email.getSubject())
 					.field("html", emailContent).asJson();
 			if (request.getStatus() != 200) {
-				// TODO: throw an email sending exception
+				throw new MailDeliveryException(
+						String.format("An error occured during the email delivery. Cause: %s", request.getStatusText()));
 			}
 		} catch (UnirestException e) {
-			// TODO: throw an email sending exception
+			throw new MailDeliveryException(
+					String.format(Messages.MAIL_DELIVERY_ERROR_MESSAGE));
 		}
 	}
 
