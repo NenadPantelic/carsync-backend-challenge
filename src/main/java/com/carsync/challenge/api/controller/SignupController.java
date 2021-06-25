@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carsync.challenge.api.dto.request.SignupDTO;
-import com.carsync.challenge.api.service.AuthService;
+import com.carsync.challenge.api.dto.request.VerifyAccountDTO;
+import com.carsync.challenge.api.service.SignupService;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -19,16 +20,23 @@ import lombok.experimental.Accessors;
 @Accessors(prefix = "_")
 @Getter
 @RestController
-@RequestMapping("/api/v1/auth/")
-public class AuthController {
+@RequestMapping("/api/v1/signup")
+public class SignupController {
 
 	@Autowired
-	private AuthService _authService;
+	private SignupService _authService;
 
 	@ResponseStatus(HttpStatus.CREATED)
-	@PostMapping("signup")
+	@PostMapping
 	public void signup(@Valid @RequestBody SignupDTO signupData) {
 		getAuthService().signup(signupData);
+	}
+	
+	
+	@ResponseStatus(HttpStatus.CREATED)
+	@PostMapping("/verify-account")
+	public void signup(@Valid @RequestBody VerifyAccountDTO verifyAccountData) {
+		getAuthService().verifyAccount(verifyAccountData);
 	}
 
 }
