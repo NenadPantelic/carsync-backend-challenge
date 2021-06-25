@@ -1,14 +1,21 @@
 package com.carsync.challenge.api.model;
 
-import java.time.Instant;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +29,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Builder
 @Entity
-public class VerificationToken {
+public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,12 +38,21 @@ public class VerificationToken {
 
 	@NotBlank(message = "Email cannot be blank. This is a required field.")
 	@Email(message = "Invalid email format.")
-	@Column(name = "email", nullable = false)
+	@Column(name = "email", unique = true, nullable = false)
 	private String _email;
 
-	@Column(name = "token", unique = true, length = 36)
-	private String _token;
+	@Size(min = 6, max = 255, message = "Length of the password must be between 6 and 50.")
+	@Column(name = "password", nullable = false)
+	private String _password;
 
-	@Column(name = "expiration_time")
-	private Instant _expirationTime;
+	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "created_at")
+	private Date _createdAt;
+
+	@UpdateTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "updated_at")
+	private Date _updatedAt;
+
 }
