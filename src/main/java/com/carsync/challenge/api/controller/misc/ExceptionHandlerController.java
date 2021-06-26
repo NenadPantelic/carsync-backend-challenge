@@ -15,6 +15,7 @@ import com.carsync.challenge.api.exception.APIErrorResponse;
 import com.carsync.challenge.api.exception.InvalidJwtAuthException;
 import com.carsync.challenge.api.exception.InvalidVerificationTokenException;
 import com.carsync.challenge.api.exception.MailDeliveryException;
+import com.carsync.challenge.api.exception.PasswordDoesNotMatchException;
 import com.carsync.challenge.api.utils.Messages;
 
 @ControllerAdvice
@@ -46,13 +47,18 @@ public class ExceptionHandlerController {
 	}
 
 	@ExceptionHandler(UsernameNotFoundException.class)
-	public final ResponseEntity<APIErrorResponse> usernameNotFoundExceptions(Exception ex, WebRequest request) {
+	public final ResponseEntity<APIErrorResponse> handleUsernameNotFoundExceptions(Exception ex, WebRequest request) {
 		return createExceptionResponseEntity(request, ex, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
-	public final ResponseEntity<APIErrorResponse> badCredentialsException(Exception ex, WebRequest request) {
+	public final ResponseEntity<APIErrorResponse> handleBadCredentialsException(Exception ex, WebRequest request) {
 		return createExceptionResponseEntity(request, ex, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(PasswordDoesNotMatchException.class)
+	public final ResponseEntity<APIErrorResponse> handleNonMatchingPasswordException(Exception ex, WebRequest request) {
+		return createExceptionResponseEntity(request, ex, HttpStatus.FORBIDDEN);
 	}
 
 	private ResponseEntity<APIErrorResponse> createExceptionResponseEntity(WebRequest request, Exception ex,
