@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// disable csrf for test and dev
-		http.csrf().disable().authorizeRequests().antMatchers("/api/v1/signup**", "/api/v1/login", "/h2-console**").permitAll().and()
+		http.csrf().disable().authorizeRequests().antMatchers("/api/v1/signup**", "/api/v1/auth", "/h2-console**").permitAll().and()
 				.exceptionHandling().authenticationEntryPoint(getAuthEntryPoint()).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.addFilterBefore(getTokenFilter(), UsernamePasswordAuthenticationFilter.class);

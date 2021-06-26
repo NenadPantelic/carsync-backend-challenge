@@ -11,12 +11,15 @@ import org.springframework.stereotype.Service;
 
 import com.carsync.challenge.api.dao.UserRepository;
 import com.carsync.challenge.api.dao.VerificationTokenRepository;
+import com.carsync.challenge.api.dto.request.LoginDTO;
 import com.carsync.challenge.api.dto.request.SignupDTO;
 import com.carsync.challenge.api.dto.request.VerifyAccountDTO;
+import com.carsync.challenge.api.dto.response.AuthenticatedDTO;
 import com.carsync.challenge.api.exception.InvalidVerificationTokenException;
 import com.carsync.challenge.api.model.User;
 import com.carsync.challenge.api.model.VerificationToken;
 import com.carsync.challenge.api.model.utils.Email;
+import com.carsync.challenge.api.service.AuthService;
 import com.carsync.challenge.api.service.MailService;
 import com.carsync.challenge.api.service.SignupService;
 import com.carsync.challenge.api.utils.TimestampUtils;
@@ -36,6 +39,9 @@ public class SignupServiceImpl implements SignupService {
 	private UserRepository _userRepository;
 
 	@Autowired
+	private AuthService _authService;
+
+	@Autowired
 	private MailService _mailService;
 
 	@Autowired
@@ -53,25 +59,26 @@ public class SignupServiceImpl implements SignupService {
 	@Transactional
 	@Override
 	public void signup(SignupDTO signupData) {
-		VerificationToken token = VerificationToken.builder().email(signupData.getEmail())
+		VerificationToken verificationToken = VerificationToken.builder().email(signupData.getEmail())
 				.token(UUID.randomUUID().toString())
 				.expirationTime(TimestampUtils.getExpirationTime(getExpirationOffsetInMinutes())).build();
-		getVerificationTokenRepository().save(token);
-		getMailService().sendMessage(new Email(getMailSender(), token.getEmail(), getMailSubject(), token.getToken()));
+		getVerificationTokenRepository().save(verificationToken);
+		getMailService().sendMessage(new Email(getMailSender(), verificationToken.getEmail(), getMailSubject(),
+				verificationToken.getToken()));
 	}
 
 	@Transactional
 	@Override
-	public void verifyAccount(VerifyAccountDTO verifyAccountData) {
+	public AuthenticatedDTO verifyAccount(VerifyAccountDTO verifyAccountData) {
 		String token = verifyAccountData.getVerificationToken();
 		VerificationToken verificationToken = getVerificationTokenRepository().findBy_token(token)
 				.orElseThrow(() -> new InvalidVerificationTokenException("The verification token is not valid!"));
 		String email = verifyAccountData.getEmail();
+		String password = verifyAccountData.getPassword();
 		checkTokenValidity(verificationToken, email);
-		createUser(verifyAccountData);
+		createUser(email, password);
 		getVerificationTokenRepository().deleteBy_email(email);
-		// TODO: return login credentials
-		// TODO: hash the password
+		return getAuthService().login(new LoginDTO(email, password));
 
 	}
 
@@ -86,9 +93,8 @@ public class SignupServiceImpl implements SignupService {
 		}
 	}
 
-	private User createUser(VerifyAccountDTO accountData) {
-		User user = User.builder().email(accountData.getEmail())
-				.password(getPasswordEncoder().encode(accountData.getPassword())).build();
+	private User createUser(String email, String password) {
+		User user = User.builder().email(email).password(getPasswordEncoder().encode(password)).build();
 		return getUserRepository().save(user);
 	}
 

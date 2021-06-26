@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthDTO {
+public class AuthenticatedDTO {
 
 	private String _token;
 
