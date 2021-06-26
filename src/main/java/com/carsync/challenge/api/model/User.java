@@ -40,7 +40,7 @@ public class User {
 	@Column(name = "email", unique = true, nullable = false)
 	private String _email;
 
-	@Size(min = 6, max = 255, message = "Length of the password must be between 6 and 50.")
+	@Size(min = 6, max = 255)
 	@Column(name = "password", nullable = false)
 	private String _password;
 
