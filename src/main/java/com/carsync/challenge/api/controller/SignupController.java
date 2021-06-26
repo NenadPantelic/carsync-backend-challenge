@@ -31,8 +31,7 @@ public class SignupController {
 	public void signup(@Valid @RequestBody final SignupDTO signupData) {
 		getAuthService().signup(signupData);
 	}
-	
-	
+
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/verify-account")
 	public void signup(@Valid @RequestBody final VerifyAccountDTO verifyAccountData) {
