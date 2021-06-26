@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.carsync.challenge.api.exception.InvalidJwtAuthException;
+import com.carsync.challenge.api.utils.AuthUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -74,11 +75,7 @@ public class JwtTokenProvider {
 	}
 
 	public String resolveToken(HttpServletRequest req) {
-		String bearerToken = req.getHeader(getJwtHeader());
-		if (bearerToken != null && bearerToken.startsWith(getHeaderPrefix())) {
-			return bearerToken.substring(7, bearerToken.length());
-		}
-		return null;
+		return AuthUtils.extractTokenFromHeader(req.getHeader(getJwtHeader()));
 	}
 
 	public Long getUserId(String token) {

@@ -35,9 +35,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtTokenProvider _tokenProvider;
 
-	// public static final ThreadLocal<UserContext> USER_CONTEXT = new
-	// ThreadLocal<UserContext>();
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
@@ -48,8 +45,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				Authentication auth = getTokenProvider().getAuthentication(token);
 				if (auth != null) {
 					log.info("Authenticating user....");
-//					USER_CONTEXT.set(new UserContext());
-//					USER_CONTEXT.get().setAuthToken(token);
 					SecurityContextHolder.getContext().setAuthentication(auth);
 				}
 			}
