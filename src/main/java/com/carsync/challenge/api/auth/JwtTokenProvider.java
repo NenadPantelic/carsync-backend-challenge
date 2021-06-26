@@ -46,7 +46,6 @@ public class JwtTokenProvider {
 
 	@Value("${security.jwt.token.header.prefix:Bearer }")
 	private String _headerPrefix;
-	
 
 	@PostConstruct
 	protected void init() {
@@ -70,8 +69,8 @@ public class JwtTokenProvider {
 		return new UsernamePasswordAuthenticationToken(username, "", authorities);
 	}
 
-	private String getUsername(String token) {
-		return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token).getBody().getSubject();
+	public String getUsername(String token) {
+		return getClaimsFromToken(token).getSubject();
 	}
 
 	public String resolveToken(HttpServletRequest req) {
@@ -80,6 +79,13 @@ public class JwtTokenProvider {
 			return bearerToken.substring(7, bearerToken.length());
 		}
 		return null;
+	}
+
+	public Long getUserId(String token) {
+		Claims claims = getClaimsFromToken(token);
+		// recode this
+		Long userId = Long.parseLong(claims.get("userId").toString());
+		return userId;
 	}
 
 	public boolean validateToken(String token) {
@@ -105,5 +111,9 @@ public class JwtTokenProvider {
 			log.error("JWT claims string is empty!");
 			throw new InvalidJwtAuthException("JWT claims string is empty!");
 		}
+	}
+
+	private Claims getClaimsFromToken(String token) {
+		return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token).getBody();
 	}
 }
