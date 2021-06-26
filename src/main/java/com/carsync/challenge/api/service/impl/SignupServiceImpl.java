@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.carsync.challenge.api.dao.UserRepository;
@@ -37,6 +38,9 @@ public class SignupServiceImpl implements SignupService {
 	@Autowired
 	private MailService _mailService;
 
+	@Autowired
+	private PasswordEncoder _passwordEncoder;
+
 	@Value("${verification-token.time-offset-in-minutes}")
 	private long _expirationOffsetInMinutes;
 
@@ -53,8 +57,7 @@ public class SignupServiceImpl implements SignupService {
 				.token(UUID.randomUUID().toString())
 				.expirationTime(TimestampUtils.getExpirationTime(getExpirationOffsetInMinutes())).build();
 		getVerificationTokenRepository().save(token);
-		getMailService().sendMessage(
-				new Email(getMailSender(), token.getEmail(), getMailSubject(), token.getToken()));
+		getMailService().sendMessage(new Email(getMailSender(), token.getEmail(), getMailSubject(), token.getToken()));
 	}
 
 	@Transactional
@@ -84,7 +87,8 @@ public class SignupServiceImpl implements SignupService {
 	}
 
 	private User createUser(VerifyAccountDTO accountData) {
-		User user = User.builder().email(accountData.getEmail()).password(accountData.getPassword()).build();
+		User user = User.builder().email(accountData.getEmail())
+				.password(getPasswordEncoder().encode(accountData.getPassword())).build();
 		return getUserRepository().save(user);
 	}
 
