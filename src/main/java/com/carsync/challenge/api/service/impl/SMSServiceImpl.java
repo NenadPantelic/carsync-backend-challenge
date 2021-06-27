@@ -29,15 +29,13 @@ public class SMSServiceImpl implements MessageService {
 
 	private final String _accountSID;
 	private final String _authToken;
-	private final String _senderPhoneNo;
 	private final String _smsTemplateFilePath;
 
 	public SMSServiceImpl(@Value("${twilio.account-sid}") String accountSID,
-			@Value("${twilio.auth-token}") String authToken, @Value("${twilio.sender-phone-no}") String senderPhoneNo,
+			@Value("${twilio.auth-token}") String authToken,
 			@Value("${sms.template-file-path}") String smsTemplateFilePath) {
 		_accountSID = accountSID;
 		_authToken = authToken;
-		_senderPhoneNo = senderPhoneNo;
 		_smsTemplateFilePath = smsTemplateFilePath;
 		Twilio.init(getAccountSID(), getAuthToken());
 	}
@@ -47,7 +45,7 @@ public class SMSServiceImpl implements MessageService {
 		if (isPhoneNumberValid(smsMessage.getFrom())) {
 			try {
 				PhoneNumber to = new PhoneNumber(smsMessage.getTo());
-				PhoneNumber from = new PhoneNumber(getSenderPhoneNo());
+				PhoneNumber from = new PhoneNumber(smsMessage.getFrom());
 				String message = createMessageContent(smsMessage.getContent());
 
 				MessageCreator creator = getMessageCreator(to, from, message);

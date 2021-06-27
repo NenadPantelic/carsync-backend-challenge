@@ -2,7 +2,6 @@ package com.carsync.challenge.api.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
@@ -19,13 +18,13 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Builder
 @Entity
-public class VerificationToken extends AuthToken{
-	@NotBlank(message = "Email cannot be blank. This is a required field.")
-	@Email(message = "Invalid email format.")
-	@Column(name = "email", nullable = false)
-	private String _email;
+public class TwoFAToken extends AuthToken {
 
-	@Column(name = "token", unique = true, length = 36)
+	@NotBlank(message = "Phone number cannot be blank. This is a required field.")
+	@Column(name = "phone_no", nullable = false)
+	private String _phoneNo;
+
+	@Column(name = "token", unique = true, length = 6)
 	private String _token;
 
 }

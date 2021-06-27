@@ -20,7 +20,7 @@ import com.carsync.challenge.api.exception.InvalidVerificationTokenException;
 import com.carsync.challenge.api.model.User;
 import com.carsync.challenge.api.model.VerificationToken;
 import com.carsync.challenge.api.model.utils.Email;
-import com.carsync.challenge.api.service.AuthService;
+import com.carsync.challenge.api.service.LoginService;
 import com.carsync.challenge.api.service.MessageService;
 import com.carsync.challenge.api.service.SignupService;
 import com.carsync.challenge.api.utils.TimestampUtils;
@@ -40,7 +40,7 @@ public class SignupServiceImpl implements SignupService {
 	private UserRepository _userRepository;
 
 	@Autowired
-	private AuthService _authService;
+	private LoginService _authService;
 
 	@Autowired
 	@Qualifier("mailService")
@@ -62,8 +62,8 @@ public class SignupServiceImpl implements SignupService {
 	@Override
 	public void signup(SignupDTO signupData) {
 		VerificationToken verificationToken = VerificationToken.builder().email(signupData.getEmail())
-				.token(UUID.randomUUID().toString())
-				.expirationTime(TimestampUtils.getExpirationTime(getExpirationOffsetInMinutes())).build();
+				.token(UUID.randomUUID().toString()).build();
+		verificationToken.setExpirationTime(TimestampUtils.getExpirationTime(getExpirationOffsetInMinutes()));
 		getVerificationTokenRepository().save(verificationToken);
 		getMailService().sendMessage(new Email(getMailSender(), verificationToken.getEmail(), getMailSubject(),
 				verificationToken.getToken()));
