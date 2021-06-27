@@ -12,16 +12,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import com.carsync.challenge.api.exception.APIErrorResponse;
+import com.carsync.challenge.api.exception.InvalidActionException;
 import com.carsync.challenge.api.exception.InvalidJwtAuthException;
 import com.carsync.challenge.api.exception.InvalidVerificationTokenException;
-import com.carsync.challenge.api.exception.MailDeliveryException;
+import com.carsync.challenge.api.exception.MessageDeliveryException;
 import com.carsync.challenge.api.exception.PasswordDoesNotMatchException;
+import com.carsync.challenge.api.exception.UnauthorizedAccessException;
 import com.carsync.challenge.api.utils.Messages;
 
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-	@ExceptionHandler(MailDeliveryException.class)
+	@ExceptionHandler(MessageDeliveryException.class)
 	public final ResponseEntity<APIErrorResponse> handleMailDeliveryException(Exception ex, WebRequest request) {
 		return createExceptionResponseEntity(request, ex, HttpStatus.SERVICE_UNAVAILABLE);
 	}
@@ -59,6 +61,16 @@ public class ExceptionHandlerController {
 	@ExceptionHandler(PasswordDoesNotMatchException.class)
 	public final ResponseEntity<APIErrorResponse> handleNonMatchingPasswordException(Exception ex, WebRequest request) {
 		return createExceptionResponseEntity(request, ex, HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(UnauthorizedAccessException.class)
+	public final ResponseEntity<APIErrorResponse> handleUsnauthorizedAccessException(Exception ex, WebRequest request) {
+		return createExceptionResponseEntity(request, ex, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(InvalidActionException.class)
+	public final ResponseEntity<APIErrorResponse> handleInvalidActionException(Exception ex, WebRequest request) {
+		return createExceptionResponseEntity(request, ex, HttpStatus.BAD_REQUEST);
 	}
 
 	private ResponseEntity<APIErrorResponse> createExceptionResponseEntity(WebRequest request, Exception ex,

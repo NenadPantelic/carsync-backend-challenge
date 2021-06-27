@@ -12,6 +12,7 @@ import com.carsync.challenge.api.dao.UserRepository;
 import com.carsync.challenge.api.dto.request.AuthRequestDTO;
 import com.carsync.challenge.api.dto.request.TwoFADTO;
 import com.carsync.challenge.api.dto.request.VerificationRequestDTO;
+import com.carsync.challenge.api.exception.InvalidActionException;
 import com.carsync.challenge.api.exception.InvalidVerificationTokenException;
 import com.carsync.challenge.api.model.TwoFAToken;
 import com.carsync.challenge.api.model.User;
@@ -74,7 +75,18 @@ public class TwoFAServiceImpl implements AuthRequestService {
 		updateUser(user, twoFAToken.getPhoneNo());
 		log.info("2FA setup verified!");
 		getTwoFARepository().deleteBy_userId(userId);
-		System.out.println(user);
+	}
+
+	public void disable() {
+		Long userId = AuthUtils.fetchUserIdFromToken();
+		User user = getUserRepository().findById(userId).orElseThrow(() -> AuthUtils.unauthorized());
+		if (!user.getTwoFAEnabled()) {
+			throw new InvalidActionException("Invalid action!");
+		}
+		user.setTwoFAEnabled(false);
+		getUserRepository().save(user);
+		log.info("2FA successfully disable!");
+		getTwoFARepository().deleteBy_userId(userId);
 	}
 
 	private void checkTokenValidity(TwoFAToken twoFAToken, Long userId) {

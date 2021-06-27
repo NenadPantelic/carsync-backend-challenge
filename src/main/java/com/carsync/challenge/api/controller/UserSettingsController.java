@@ -52,4 +52,11 @@ public class UserSettingsController {
 		getTwoFAService().verifyAuthRequest(verificationData);
 	}
 
+	
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PostMapping("/two-fa/disable")
+	public void disableTwoFA() {
+		getTwoFAService().disable();
+	}
+
 }

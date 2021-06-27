@@ -44,8 +44,9 @@ public class User {
 	@Column(name = "password", nullable = false)
 	private String _password;
 
+	@Builder.Default
 	@Column(name = "two_fa_enabled")
-	private Boolean _twoFAEnabled;
+	private Boolean _twoFAEnabled = false;
 
 	// TODO: add validation
 	@Column(name = "phone_no")
