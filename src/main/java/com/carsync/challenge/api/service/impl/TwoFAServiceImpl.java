@@ -13,10 +13,10 @@ import com.carsync.challenge.api.dto.request.TwoFADTO;
 import com.carsync.challenge.api.dto.request.VerificationRequestDTO;
 import com.carsync.challenge.api.model.TwoFAToken;
 import com.carsync.challenge.api.model.utils.SMS;
+import com.carsync.challenge.api.model.utils.TokenType;
 import com.carsync.challenge.api.service.AuthRequestService;
 import com.carsync.challenge.api.service.MessageService;
-import com.carsync.challenge.api.utils.AuthUtils;
-import com.carsync.challenge.api.utils.TimestampUtils;
+import com.carsync.challenge.api.utils.FactoryUtils;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -45,8 +45,8 @@ public class TwoFAServiceImpl implements AuthRequestService {
 	@Override
 	public void createAuthRequest(AuthRequestDTO authReqData) {
 		String phoneNo = ((TwoFADTO) authReqData).getPhoneNo();
-		TwoFAToken twoFAToken = TwoFAToken.builder().phoneNo(phoneNo).token(AuthUtils.generateRandomCode(6)).build();
-		twoFAToken.setExpirationTime(TimestampUtils.getExpirationTime(getExpirationOffsetInMinutes()));
+		TwoFAToken twoFAToken = (TwoFAToken) FactoryUtils.createToken(TokenType.TWO_FA, phoneNo,
+				getExpirationOffsetInMinutes());
 		log.info("2FA token created!");
 		getTwoFARepository().save(twoFAToken);
 		getMessageService().sendMessage(new SMS(getSenderPhoneNo(), phoneNo, twoFAToken.getToken()));

@@ -1,7 +1,5 @@
 package com.carsync.challenge.api.service.impl;
 
-import java.util.UUID;
-
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +18,11 @@ import com.carsync.challenge.api.exception.InvalidVerificationTokenException;
 import com.carsync.challenge.api.model.User;
 import com.carsync.challenge.api.model.VerificationToken;
 import com.carsync.challenge.api.model.utils.Email;
+import com.carsync.challenge.api.model.utils.TokenType;
 import com.carsync.challenge.api.service.LoginService;
 import com.carsync.challenge.api.service.MessageService;
 import com.carsync.challenge.api.service.SignupService;
+import com.carsync.challenge.api.utils.FactoryUtils;
 import com.carsync.challenge.api.utils.TimestampUtils;
 
 import lombok.Getter;
@@ -61,9 +61,8 @@ public class SignupServiceImpl implements SignupService {
 	@Transactional
 	@Override
 	public void signup(SignupDTO signupData) {
-		VerificationToken verificationToken = VerificationToken.builder().email(signupData.getEmail())
-				.token(UUID.randomUUID().toString()).build();
-		verificationToken.setExpirationTime(TimestampUtils.getExpirationTime(getExpirationOffsetInMinutes()));
+		VerificationToken verificationToken = (VerificationToken) FactoryUtils.createToken(TokenType.SIGNUP_VERIFICATION,
+				signupData.getEmail(), getExpirationOffsetInMinutes());
 		getVerificationTokenRepository().save(verificationToken);
 		getMailService().sendMessage(new Email(getMailSender(), verificationToken.getEmail(), getMailSubject(),
 				verificationToken.getToken()));
