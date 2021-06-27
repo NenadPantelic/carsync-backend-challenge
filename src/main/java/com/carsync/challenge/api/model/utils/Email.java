@@ -1,18 +1,19 @@
 package com.carsync.challenge.api.model.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(prefix = "_")
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-public class Email {
-	private String _from;
-	private String _to;
+public class Email extends Message {
 	private String _subject;
-	private String _content;
 
+	public Email(String from, String to, String subject, String content) {
+		super(from, to, content);
+		_subject = subject;
+	}
 }

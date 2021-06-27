@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import com.carsync.challenge.api.model.User;
 import com.carsync.challenge.api.model.VerificationToken;
 import com.carsync.challenge.api.model.utils.Email;
 import com.carsync.challenge.api.service.AuthService;
-import com.carsync.challenge.api.service.MailService;
+import com.carsync.challenge.api.service.MessageService;
 import com.carsync.challenge.api.service.SignupService;
 import com.carsync.challenge.api.utils.TimestampUtils;
 
@@ -42,7 +43,8 @@ public class SignupServiceImpl implements SignupService {
 	private AuthService _authService;
 
 	@Autowired
-	private MailService _mailService;
+	@Qualifier("mailService")
+	private MessageService _mailService;
 
 	@Autowired
 	private PasswordEncoder _passwordEncoder;
