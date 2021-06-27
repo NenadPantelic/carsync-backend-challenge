@@ -20,6 +20,9 @@ import lombok.experimental.Accessors;
 @Entity
 public class TwoFAToken extends AuthToken {
 
+	@Column(name = "user_id", nullable = false)
+	private Long _userId;
+
 	@NotBlank(message = "Phone number cannot be blank. This is a required field.")
 	@Column(name = "phone_no", nullable = false)
 	private String _phoneNo;

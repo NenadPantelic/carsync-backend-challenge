@@ -44,6 +44,13 @@ public class User {
 	@Column(name = "password", nullable = false)
 	private String _password;
 
+	@Column(name = "two_fa_enabled")
+	private Boolean _twoFAEnabled;
+
+	// TODO: add validation
+	@Column(name = "phone_no")
+	private String _phoneNo;
+
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_at")

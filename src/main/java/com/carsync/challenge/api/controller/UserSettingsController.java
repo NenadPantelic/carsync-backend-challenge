@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.carsync.challenge.api.dto.request.ChangePasswordDTO;
 import com.carsync.challenge.api.dto.request.TwoFADTO;
+import com.carsync.challenge.api.dto.request.VerificationRequestDTO;
 import com.carsync.challenge.api.service.AuthRequestService;
 import com.carsync.challenge.api.service.UserSettingsService;
 
@@ -40,8 +41,15 @@ public class UserSettingsController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/two-fa")
-	public void enableTwoFA(@RequestBody TwoFADTO twoFAData) {
+	public void enableTwoFA(@Valid @RequestBody TwoFADTO twoFAData) {
 		getTwoFAService().createAuthRequest(twoFAData);
+	}
+	
+	
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PostMapping("/two-fa/enable")
+	public void enableTwoFA(@Valid @RequestBody VerificationRequestDTO verificationData) {
+		getTwoFAService().verifyAuthRequest(verificationData);
 	}
 
 }
