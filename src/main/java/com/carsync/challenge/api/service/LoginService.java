@@ -1,10 +1,15 @@
 package com.carsync.challenge.api.service;
 
-import com.carsync.challenge.api.dto.request.LoginDTO;
-import com.carsync.challenge.api.dto.response.AuthenticatedDTO;
+import javax.validation.Valid;
 
-public interface AuthService {
-	
-	public AuthenticatedDTO login(LoginDTO loginData);
+import com.carsync.challenge.api.dto.request.LoginDTO;
+import com.carsync.challenge.api.dto.request.TwoFALoginDTO;
+import com.carsync.challenge.api.dto.response.AuthResultDTO;
+
+public interface LoginService {
+
+	public AuthResultDTO login(LoginDTO loginData);
+
+	public AuthResultDTO loginWithTwoFA(@Valid TwoFALoginDTO loginData);
 
 }

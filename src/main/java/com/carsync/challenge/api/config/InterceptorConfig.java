@@ -20,7 +20,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(interceptor()).addPathPatterns("/**").excludePathPatterns("/api/v1/signup**",
-				"/api/v1/auth", "/h2-console**");
+				"/api/v1/login", "/api/v1/login/two-fa", "/h2-console**");
 
 	}
 

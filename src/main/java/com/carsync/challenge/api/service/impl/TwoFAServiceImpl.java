@@ -18,6 +18,7 @@ import com.carsync.challenge.api.model.TwoFAToken;
 import com.carsync.challenge.api.model.User;
 import com.carsync.challenge.api.model.utils.SMS;
 import com.carsync.challenge.api.model.utils.TokenType;
+import com.carsync.challenge.api.model.utils.UserTwoFA;
 import com.carsync.challenge.api.service.AuthRequestService;
 import com.carsync.challenge.api.service.MessageService;
 import com.carsync.challenge.api.utils.AuthUtils;
@@ -54,31 +55,24 @@ public class TwoFAServiceImpl implements AuthRequestService {
 	@Override
 	public void createAuthRequest(AuthRequestDTO authReqData) {
 		String phoneNo = ((TwoFADTO) authReqData).getPhoneNo();
-		TwoFAToken twoFAToken = (TwoFAToken) FactoryUtils.createToken(TokenType.TWO_FA, phoneNo,
-				getExpirationOffsetInMinutes());
-		twoFAToken.setUserId(AuthUtils.fetchUserIdFromToken());
-		log.info("2FA token created!");
-		getTwoFARepository().save(twoFAToken);
-		getMessageService().sendMessage(new SMS(getSenderPhoneNo(), phoneNo, twoFAToken.getToken()));
+		Long userId = AuthUtils.fetchUserId();
+		TwoFAToken twoFAToken = setTwoFA(userId, phoneNo);
+		checkTokenValidity(twoFAToken, userId);
 	}
 
 	@Transactional
 	@Override
 	public void verifyAuthRequest(VerificationRequestDTO verificationData) {
 		String token = verificationData.getVerificationToken();
-		TwoFAToken twoFAToken = getTwoFARepository().findBy_token(token)
-				.orElseThrow(() -> new InvalidVerificationTokenException("The verification token is not valid!"));
-		Long userId = AuthUtils.fetchUserIdFromToken();
-
-		checkTokenValidity(twoFAToken, userId);
-		User user = getUserRepository().findById(userId).orElseThrow(() -> AuthUtils.unauthorized());
-		updateUser(user, twoFAToken.getPhoneNo());
+		UserTwoFA user2FA = performTwoFA(token);
 		log.info("2FA setup verified!");
-		getTwoFARepository().deleteBy_userId(userId);
+		updateUser(user2FA.getUser(), user2FA.getToken().getPhoneNo());
+
 	}
 
+	@Override
 	public void disable() {
-		Long userId = AuthUtils.fetchUserIdFromToken();
+		Long userId = AuthUtils.fetchUserId();
 		User user = getUserRepository().findById(userId).orElseThrow(() -> AuthUtils.unauthorized());
 		if (!user.getTwoFAEnabled()) {
 			throw new InvalidActionException("Invalid action!");
@@ -87,6 +81,42 @@ public class TwoFAServiceImpl implements AuthRequestService {
 		getUserRepository().save(user);
 		log.info("2FA successfully disable!");
 		getTwoFARepository().deleteBy_userId(userId);
+	}
+
+	TwoFAToken setTwoFA(Long userId, String phoneNo) {
+		TwoFAToken twoFAToken = createToken(phoneNo);
+		twoFAToken.setUserId(userId);
+		log.info("2FA token created!");
+		getTwoFARepository().save(twoFAToken);
+		sendToken(phoneNo, twoFAToken.getToken());
+		return twoFAToken;
+	}
+
+	UserTwoFA performTwoFA(String token) {
+		log.info("Performing 2FA check...");
+		TwoFAToken twoFAToken = resolveTwoFAToken(token);
+		Long userId = twoFAToken.getUserId();
+		User user = getUserRepository().findById(userId).orElseThrow(() -> AuthUtils.unauthorized());
+		checkTokenValidity(twoFAToken, userId);
+		log.info("Success - 2FA token matched!");
+		getTwoFARepository().deleteBy_userId(userId);
+		return new UserTwoFA(user, twoFAToken);
+	}
+
+	TwoFAToken resolveTwoFAToken(String token) {
+		TwoFAToken twoFAToken = getTwoFARepository().findBy_token(token)
+				.orElseThrow(() -> new InvalidVerificationTokenException("The verification token is not valid!"));
+		return twoFAToken;
+	}
+
+	private void sendToken(String phoneNo, String token) {
+		getMessageService().sendMessage(new SMS(getSenderPhoneNo(), phoneNo, token));
+	}
+
+	private TwoFAToken createToken(String phoneNo) {
+		TwoFAToken twoFAToken = (TwoFAToken) FactoryUtils.createToken(TokenType.TWO_FA, phoneNo,
+				getExpirationOffsetInMinutes());
+		return twoFAToken;
 	}
 
 	private void checkTokenValidity(TwoFAToken twoFAToken, Long userId) {

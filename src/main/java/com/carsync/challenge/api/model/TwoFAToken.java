@@ -2,7 +2,6 @@ package com.carsync.challenge.api.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +22,7 @@ public class TwoFAToken extends AuthToken {
 	@Column(name = "user_id", nullable = false)
 	private Long _userId;
 
-	@NotBlank(message = "Phone number cannot be blank. This is a required field.")
-	@Column(name = "phone_no", nullable = false)
+	@Column(name = "phone_no", nullable = true)
 	private String _phoneNo;
 
 	@Column(name = "token", unique = true, length = 6)

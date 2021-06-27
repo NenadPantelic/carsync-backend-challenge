@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carsync.challenge.api.dto.request.LoginDTO;
-import com.carsync.challenge.api.dto.response.AuthenticatedDTO;
-import com.carsync.challenge.api.service.AuthService;
+import com.carsync.challenge.api.dto.request.TwoFALoginDTO;
+import com.carsync.challenge.api.dto.response.AuthResultDTO;
+import com.carsync.challenge.api.service.LoginService;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -18,15 +19,20 @@ import lombok.experimental.Accessors;
 @Accessors(prefix = "_")
 @Getter
 @RestController
-@RequestMapping("/api/v1/auth")
-public class AuthController {
+@RequestMapping("/api/v1/login")
+public class LoginController {
 
 	@Autowired
-	private AuthService _authService;
+	private LoginService _loginService;
 
 	@PostMapping
-	public AuthenticatedDTO login(@Valid @RequestBody final LoginDTO loginData) {
-		return getAuthService().login(loginData);
+	public AuthResultDTO login(@Valid @RequestBody final LoginDTO loginData) {
+		return getLoginService().login(loginData);
 	}
 
+	
+	@PostMapping("/two-fa")
+	public AuthResultDTO loginWithTwoFA(@Valid @RequestBody final TwoFALoginDTO loginData) {
+		return getLoginService().loginWithTwoFA(loginData);
+	}
 }
