@@ -23,7 +23,7 @@ public class AuthUtils {
 		return pwdGenerator.generate(length);
 	}
 
-	public static Long fetchUserIdFromToken() {
+	public static Long fetchUserId() {
 		UserContext userContext = AuthInterceptor.context.get();
 		if (userContext == null) {
 			throw unauthorized();

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.carsync.challenge.api.dto.request.SignupDTO;
 import com.carsync.challenge.api.dto.request.VerifyAccountDTO;
-import com.carsync.challenge.api.dto.response.AuthenticatedDTO;
+import com.carsync.challenge.api.dto.response.AuthResultDTO;
 import com.carsync.challenge.api.service.SignupService;
 
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class SignupController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/verify-account")
-	public AuthenticatedDTO signup(@Valid @RequestBody final VerifyAccountDTO verifyAccountData) {
+	public AuthResultDTO signup(@Valid @RequestBody final VerifyAccountDTO verifyAccountData) {
 		return getAuthService().verifyAccount(verifyAccountData);
 	}
 
