@@ -18,6 +18,7 @@ import com.carsync.challenge.api.dto.response.AuthResultDTO;
 import com.carsync.challenge.api.service.AuthRequestService;
 import com.carsync.challenge.api.service.LoginService;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
@@ -34,12 +35,14 @@ public class SignupController {
 	@Autowired
 	private LoginService _loginService;
 
+	@ApiOperation(value = "Make signup request - with email")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
 	public void signup(@Valid @RequestBody final SignupDTO signupData) {
 		getSignupService().createAuthRequest(signupData);
 	}
 
+	@ApiOperation(value = "Verify signup request (register) - with secret verification code")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/verify-account")
 	public AuthResultDTO signup(@Valid @RequestBody final VerifyAccountDTO verifyAccountData) {

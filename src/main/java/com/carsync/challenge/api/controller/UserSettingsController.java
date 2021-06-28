@@ -17,6 +17,7 @@ import com.carsync.challenge.api.dto.request.VerificationRequestDTO;
 import com.carsync.challenge.api.service.AuthRequestService;
 import com.carsync.challenge.api.service.UserSettingsService;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
@@ -33,26 +34,28 @@ public class UserSettingsController {
 	@Qualifier("twoFAService")
 	private AuthRequestService _twoFAService;
 
+	@ApiOperation(value = "Change password")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping
 	public void changePassword(@Valid @RequestBody ChangePasswordDTO passwordData) {
 		getUserSettingsService().changePassword(passwordData);
 	}
 
+	@ApiOperation(value = "Make a request for 2FA verification")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/two-fa")
 	public void enableTwoFA(@Valid @RequestBody TwoFADTO twoFAData) {
 		getTwoFAService().createAuthRequest(twoFAData);
 	}
-	
-	
+
+	@ApiOperation(value = "Confirm (enable) 2FA")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/two-fa/enable")
 	public void enableTwoFA(@Valid @RequestBody VerificationRequestDTO verificationData) {
 		getTwoFAService().verifyAuthRequest(verificationData);
 	}
 
-	
+	@ApiOperation(value = "Disable 2FA")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/two-fa/disable")
 	public void disableTwoFA() {
