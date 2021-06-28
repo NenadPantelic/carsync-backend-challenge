@@ -96,8 +96,8 @@ If the token is valid, 2FA is enabled.
 }
 
 ```
-For more details about endpoints, check Swagger docs at `/swagger-ui/`.
-
+For more details about endpoints, check Swagger docs at `/swagger-ui/`.<br>
+**NOTE:** endpoints **#4**, **#5**, **#6** and **#8** need authentication - send `Bearer <token>` authorization header.
 
 ## 3. Requirements
 Login360 is implemented with:
