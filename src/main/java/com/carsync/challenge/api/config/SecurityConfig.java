@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// disable csrf for test and dev
 		http.csrf().disable().authorizeRequests()
-				.antMatchers("/api/v1/signup**", "/api/v1/login**", "/h2-console**", "**/api-docs/**", "/swagger-ui/**",
+				.antMatchers("/api/v1/signup","/api/v1/signup/verify-account", "/api/v1/login/two-fa", "/api/v1/login" , "/h2-console**", "**/api-docs/**", "/swagger-ui/**",
 						"/webjars/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
 						"/configuration/**", "/swagger-ui.html", "/webjars/**")
 				.permitAll().antMatchers("/api/v1/my-profile/settings**").authenticated().and().exceptionHandling()

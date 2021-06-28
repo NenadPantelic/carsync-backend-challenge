@@ -75,7 +75,7 @@ public class TwoFAServiceImpl implements AuthRequestService {
 		Long userId = AuthUtils.fetchUserId();
 		User user = getUserRepository().findById(userId).orElseThrow(() -> AuthUtils.unauthorized());
 		if (!user.getTwoFAEnabled()) {
-			throw new InvalidActionException("Invalid action!");
+			throw new InvalidActionException("Invalid action! 2FA is not enabled!");
 		}
 		user.setTwoFAEnabled(false);
 		getUserRepository().save(user);

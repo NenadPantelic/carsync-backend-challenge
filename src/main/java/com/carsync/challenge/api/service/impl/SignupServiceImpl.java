@@ -27,9 +27,11 @@ import com.carsync.challenge.api.utils.TimestampUtils;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
 @Accessors(prefix = "_")
 @Getter
+@Slf4j
 @Service("signupService")
 public class SignupServiceImpl implements AuthRequestService {
 
@@ -64,8 +66,10 @@ public class SignupServiceImpl implements AuthRequestService {
 		VerificationToken verificationToken = (VerificationToken) FactoryUtils.createToken(
 				TokenType.SIGNUP_VERIFICATION, ((SignupDTO) signupData).getEmail(), getExpirationOffsetInMinutes());
 		getVerificationTokenRepository().save(verificationToken);
+		log.info("Verification token created!");
 		getMailService().sendMessage(new Email(getMailSender(), verificationToken.getEmail(), getMailSubject(),
 				verificationToken.getToken()));
+		log.info("Verification token successfully delivered!");
 	}
 
 	@Transactional
@@ -77,10 +81,10 @@ public class SignupServiceImpl implements AuthRequestService {
 		String email = ((VerifyAccountDTO) verificationData).getEmail();
 		String password = ((VerifyAccountDTO) verificationData).getPassword();
 		checkTokenValidity(verificationToken, email);
+		log.info("Signup token matching confirmed!");
 		createUser(email, password);
 		getVerificationTokenRepository().deleteBy_email(email);
-		// return getAuthService().login(new LoginDTO(email, password));
-
+		log.info("New user registered - {}!", email);
 	}
 
 	private void checkTokenValidity(VerificationToken verificationToken, String email) {

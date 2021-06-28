@@ -14,9 +14,11 @@ import com.carsync.challenge.api.utils.AuthUtils;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
 @Accessors(prefix = "_")
 @Getter
+@Slf4j
 @Service
 public class UserSettingsServiceImpl implements UserSettingsService {
 
@@ -38,6 +40,7 @@ public class UserSettingsServiceImpl implements UserSettingsService {
 		}
 		user.setPassword(getPasswordEncoder().encode(passwordData.getNewPassword()));
 		getUserRepository().save(user);
+		log.info("Password successfully changed for user = {}!", userId);
 	}
 
 }

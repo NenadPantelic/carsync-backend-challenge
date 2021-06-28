@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangePasswordDTO {
-	@Size(min = 6, max = 50, message = "Length of the password must be between 6 and 50.")
+	
 	@NotBlank(message = "You have to enter the current password!")
 	private String _oldPassword;
 

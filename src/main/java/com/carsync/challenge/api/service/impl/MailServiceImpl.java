@@ -18,6 +18,9 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service("mailService")
 public class MailServiceImpl implements MessageService {
 
@@ -53,6 +56,7 @@ public class MailServiceImpl implements MessageService {
 	public void sendMessage(Message email) {
 		String emailContent = createMessageContent(email.getContent());
 		try {
+			log.info("Preparing mail sending...");
 			HttpResponse<JsonNode> request = Unirest.post(getApiEndpoint()).basicAuth("api", getApiKey())
 					.field("from", email.getFrom()).field("to", email.getTo())
 					.field("subject", ((Email) email).getSubject()).field("html", emailContent).asJson();
@@ -60,6 +64,7 @@ public class MailServiceImpl implements MessageService {
 				throw new MessageDeliveryException(String
 						.format("An error occured during the email delivery. Cause: %s", request.getStatusText()));
 			}
+			log.info("Mail sent successfully!");
 		} catch (UnirestException e) {
 			throw new MessageDeliveryException(String.format(Messages.MAIL_DELIVERY_ERROR_MESSAGE));
 		}

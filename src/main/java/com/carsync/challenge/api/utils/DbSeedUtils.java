@@ -26,6 +26,7 @@ public class DbSeedUtils {
 	@Autowired
 	private PasswordEncoder _passwordEncoder;
 
+	// for testing
 	private final String TEST_PHONE_NO = "";
 
 	public void addUser() {
