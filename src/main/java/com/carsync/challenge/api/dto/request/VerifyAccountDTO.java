@@ -5,15 +5,17 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(prefix = "_")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerifyAccountDTO {
+public class VerifyAccountDTO  extends VerificationRequestDTO{
 
 	@NotBlank(message = "Email must be provided. Cannot be blank!")
 	@Email(message = "Invalid email format.")
@@ -23,7 +25,5 @@ public class VerifyAccountDTO {
 	@Size(min = 6, max = 50, message = "Length of the password must be between 6 and 50.")
 	private String _password;
 
-	@NotBlank(message = "Verification token is required.")
-	private String _verificationToken;
 
 }

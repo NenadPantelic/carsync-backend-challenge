@@ -3,6 +3,7 @@ package com.carsync.challenge.api.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.carsync.challenge.api.dto.request.LoginDTO;
 import com.carsync.challenge.api.dto.request.SignupDTO;
 import com.carsync.challenge.api.dto.request.VerifyAccountDTO;
 import com.carsync.challenge.api.dto.response.AuthResultDTO;
-import com.carsync.challenge.api.service.SignupService;
+import com.carsync.challenge.api.service.AuthRequestService;
+import com.carsync.challenge.api.service.LoginService;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -25,18 +28,23 @@ import lombok.experimental.Accessors;
 public class SignupController {
 
 	@Autowired
-	private SignupService _authService;
+	@Qualifier("signupService")
+	private AuthRequestService _signupService;
+
+	@Autowired
+	private LoginService _loginService;
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
 	public void signup(@Valid @RequestBody final SignupDTO signupData) {
-		getAuthService().signup(signupData);
+		getSignupService().createAuthRequest(signupData);
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/verify-account")
 	public AuthResultDTO signup(@Valid @RequestBody final VerifyAccountDTO verifyAccountData) {
-		return getAuthService().verifyAccount(verifyAccountData);
+		getSignupService().verifyAuthRequest(verifyAccountData);
+		return getLoginService().login(new LoginDTO(verifyAccountData.getEmail(), verifyAccountData.getPassword()));
 	}
 
 }

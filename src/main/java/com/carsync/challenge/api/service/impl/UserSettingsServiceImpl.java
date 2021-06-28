@@ -31,7 +31,7 @@ public class UserSettingsServiceImpl implements UserSettingsService {
 
 	@Override
 	public void changePassword(ChangePasswordDTO passwordData) {
-		Long userId = AuthUtils.fetchUserIdFromToken();
+		Long userId = AuthUtils.fetchUserId();
 		User user = getUserRepository().findById(userId).orElseThrow(() -> AuthUtils.unauthorized());
 		if (!getPasswordEncoder().matches(passwordData.getOldPassword(), user.getPassword())) {
 			throw new PasswordDoesNotMatchException("Wrong current password! Try again!");

@@ -10,18 +10,18 @@ import org.springframework.stereotype.Service;
 
 import com.carsync.challenge.api.dao.UserRepository;
 import com.carsync.challenge.api.dao.VerificationTokenRepository;
-import com.carsync.challenge.api.dto.request.LoginDTO;
+import com.carsync.challenge.api.dto.request.AuthRequestDTO;
 import com.carsync.challenge.api.dto.request.SignupDTO;
+import com.carsync.challenge.api.dto.request.VerificationRequestDTO;
 import com.carsync.challenge.api.dto.request.VerifyAccountDTO;
-import com.carsync.challenge.api.dto.response.AuthenticatedDTO;
 import com.carsync.challenge.api.exception.InvalidVerificationTokenException;
 import com.carsync.challenge.api.model.User;
 import com.carsync.challenge.api.model.VerificationToken;
 import com.carsync.challenge.api.model.utils.Email;
 import com.carsync.challenge.api.model.utils.TokenType;
+import com.carsync.challenge.api.service.AuthRequestService;
 import com.carsync.challenge.api.service.LoginService;
 import com.carsync.challenge.api.service.MessageService;
-import com.carsync.challenge.api.service.SignupService;
 import com.carsync.challenge.api.utils.FactoryUtils;
 import com.carsync.challenge.api.utils.TimestampUtils;
 
@@ -30,8 +30,8 @@ import lombok.experimental.Accessors;
 
 @Accessors(prefix = "_")
 @Getter
-@Service
-public class SignupServiceImpl implements SignupService {
+@Service("signupService")
+public class SignupServiceImpl implements AuthRequestService {
 
 	@Autowired
 	private VerificationTokenRepository _verificationTokenRepository;
@@ -60,9 +60,9 @@ public class SignupServiceImpl implements SignupService {
 
 	@Transactional
 	@Override
-	public void signup(SignupDTO signupData) {
-		VerificationToken verificationToken = (VerificationToken) FactoryUtils.createToken(TokenType.SIGNUP_VERIFICATION,
-				signupData.getEmail(), getExpirationOffsetInMinutes());
+	public void createAuthRequest(AuthRequestDTO signupData) {
+		VerificationToken verificationToken = (VerificationToken) FactoryUtils.createToken(
+				TokenType.SIGNUP_VERIFICATION, ((SignupDTO) signupData).getEmail(), getExpirationOffsetInMinutes());
 		getVerificationTokenRepository().save(verificationToken);
 		getMailService().sendMessage(new Email(getMailSender(), verificationToken.getEmail(), getMailSubject(),
 				verificationToken.getToken()));
@@ -70,16 +70,16 @@ public class SignupServiceImpl implements SignupService {
 
 	@Transactional
 	@Override
-	public AuthenticatedDTO verifyAccount(VerifyAccountDTO verifyAccountData) {
-		String token = verifyAccountData.getVerificationToken();
+	public void verifyAuthRequest(VerificationRequestDTO verificationData) {
+		String token = verificationData.getVerificationToken();
 		VerificationToken verificationToken = getVerificationTokenRepository().findBy_token(token)
 				.orElseThrow(() -> new InvalidVerificationTokenException("The verification token is not valid!"));
-		String email = verifyAccountData.getEmail();
-		String password = verifyAccountData.getPassword();
+		String email = ((VerifyAccountDTO) verificationData).getEmail();
+		String password = ((VerifyAccountDTO) verificationData).getPassword();
 		checkTokenValidity(verificationToken, email);
 		createUser(email, password);
 		getVerificationTokenRepository().deleteBy_email(email);
-		return getAuthService().login(new LoginDTO(email, password));
+		// return getAuthService().login(new LoginDTO(email, password));
 
 	}
 

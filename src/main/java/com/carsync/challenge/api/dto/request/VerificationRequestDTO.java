@@ -14,5 +14,5 @@ import lombok.experimental.Accessors;
 public class VerificationRequestDTO {
 
 	@NotBlank(message = "Verification token is required.")
-	private String _verificationToken;
+	protected String _verificationToken;
 }
